@@ -1,0 +1,37 @@
+local META = 3000
+local VELOCIDAD = 0.033
+local remote = game:GetService("ReplicatedStorage"):WaitForChild("StPatricks2026"):WaitForChild("RemoteEvent")
+local player = game.Players.LocalPlayer
+local recolectado = 0
+local inicio = tick()
+local activo = true
+
+local function recolectar()
+    if not activo then return false end
+    local success = pcall(function()
+        remote:FireServer("collect")
+    end)
+    if success then
+        recolectado = recolectado + 1
+    end
+    return success
+end
+
+wait(3)
+
+while activo and recolectado < META do
+    if not recolectar() then
+        wait(1)
+    end
+    wait(VELOCIDAD)
+end
+
+local tiempoTotal = math.floor(tick() - inicio)
+
+pcall(function()
+    local notif = Instance.new("Hint")
+    notif.Parent = workspace
+    notif.Text = " Recolección completada: " .. recolectado .. " items"
+    wait(5)
+    notif:Destroy()
+end)
